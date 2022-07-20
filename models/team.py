@@ -3,12 +3,7 @@ from typing import List
 
 from pydantic import BaseModel, AnyUrl, Json
 
-
-class Task(BaseModel):
-    title: str
-    description: str
-    start_datetime: datetime
-    deadline: timedelta
+from .tasks import Task
 
 
 class TeamMemberCharacteristics(BaseModel):
@@ -25,4 +20,3 @@ class TeamMember(BaseModel):
 
 class Team(BaseModel):
     members: List[TeamMember] | Json[List[TeamMember]]
-    leader: TeamMember
