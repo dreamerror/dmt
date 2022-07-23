@@ -5,3 +5,8 @@ venv/
 
 .idea/
 
+/build
+/dist
+*.egg-info
+
+.env
