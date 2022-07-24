@@ -3,7 +3,7 @@ from faker import Faker
 
 from ..api_main import app
 from ..access_keys import generate_key, validate_key
-from ..pydantic_models import User
+from ...models.user import User
 
 
 client = TestClient(app)

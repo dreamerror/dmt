@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from .access_keys import generate_key, validate_key
-from .pydantic_models import User
+from ..models.user import User
 
 
 app = FastAPI()
