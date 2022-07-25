@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
 from faker import Faker
 
-from ..api_main import app
-from ..access_keys import generate_key, validate_key
-from ...models.user import User
+from ..api.api_main import app
+from ..api.access_keys import generate_key, validate_key
+from ..models.user import User
 
 
 client = TestClient(app)
