@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from pydantic import EmailStr
 
-from ...models.user import User
+from models.user import User
 
 router = APIRouter(
     prefix="/user",
