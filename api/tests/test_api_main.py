@@ -19,7 +19,7 @@ def test_simple_get():
 
 
 def test_key_get():
-    response = client.get("/api/key")
+    response = client.get("/key")
     assert response.status_code == 200
     assert validate_key(response.json()["key"])
 
