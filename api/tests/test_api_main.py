@@ -27,5 +27,5 @@ def test_key_get():
 def test_create_user():
     user = {"email": fake.email(), "access_key": generate_key()}
     response = client.post("/user/register", User(**user).json())
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json()['email'] == user['email']
