@@ -7,14 +7,6 @@ class Productivity {
         double motivation;
         double productivity;
 
-    public:
-        Productivity() {
-            qualification = 10;
-            count = 3;
-            motivation = 1;
-            productivity = 1;
-        }
-
         void calc_motivation() {
             motivation = 1;
             if (qualification <= 5 && count >= 3) {
@@ -40,9 +32,25 @@ class Productivity {
             calc_productivity();
         }
 
+    public:
+        Productivity() {
+            qualification = 10;
+            count = 3;
+            motivation = 1;
+            productivity = 1;
+        }
+
+        int get_qualification() {
+            return qualification;
+        }
+
         void set_qualification(int qualification_) {
             qualification = qualification_;
             update_productivity();
+        }
+
+        int get_count() {
+            return count;
         }
 
         void set_count(int count_) {
@@ -50,7 +58,12 @@ class Productivity {
             update_productivity();
         }
 
-        double get_productivity() const {
+        double get_motivation() {
+            return motivation;
+        }
+
+        double get_productivity() {
             return productivity;
         }
+
 };

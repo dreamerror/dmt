@@ -13,12 +13,10 @@ ext_modules = [
 
 setup(
     name='logic',
-    version='0.0.1',
+    version='0.1.2',
     author='user',
     author_email='user@user.ru',
     description='pybind11 extension',
     ext_modules=ext_modules,
     requires=['pybind11']
 )
-
-
