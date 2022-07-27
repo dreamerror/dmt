@@ -11,13 +11,6 @@ fake = Faker()
 Faker.seed(0)
 
 
-def test_simple_get():
-    # TODO: убрать этот тест, как бесполезный
-    response = client.get("/ping")
-    assert response.status_code == 200
-    assert response.json() == {"ping": "pong"}
-
-
 def test_key_get():
     response = client.get("/key")
     assert response.status_code == 200
