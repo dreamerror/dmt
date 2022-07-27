@@ -17,6 +17,3 @@ def validate_key(key: str) -> bool:
     segments = key.split('-')
     segments_is_ascii = list(map(is_ascii, segments))
     return all([len(segments) == 4, segments_is_ascii[0], len(set(segments_is_ascii)) == 1])
-
-
-print(generate_key())
