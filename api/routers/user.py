@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from pydantic import EmailStr
 
-from models.user import User
+from models.account import User
 
 router = APIRouter(
     prefix="/user",
@@ -15,7 +15,7 @@ async def access_level_params(is_superuser: bool):
 
 @router.get("/{user_id}")
 async def get_user_by_id(user_id: int):
-    return User(email=EmailStr("example@example.com"), access_key="ACCESS")
+    return User(email=EmailStr("example@example.com"), hashed_password="example_pass")
 
 
 @router.post("/register", response_model=User, status_code=201)
