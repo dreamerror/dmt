@@ -16,6 +16,7 @@ class TeamMember(BaseModel):
     photo: AnyUrl | None = None
     characteristics: TeamMemberCharacteristics
     task_on_work: Task | None = None
+    role_on_task: str | None = None
 
 
 class Team(BaseModel):
