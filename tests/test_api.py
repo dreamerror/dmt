@@ -22,3 +22,13 @@ def test_create_user():
     response = client.post("/user/register", User(**user).json())
     assert response.status_code == 201
     assert response.json()['email'] == user['email']
+
+
+def test_auth():
+    pwd = "example"
+    email = "example@example.com"
+    response = client.post("/auth/signup", {"username": email, "password": pwd})
+    assert response.status_code == 201
+    new_response = client.get("/user/me", headers={"Authorization": f"Bearer {response.json()['access_token']}"})
+    assert new_response.status_code == 200
+    assert new_response.json()["email"] == email

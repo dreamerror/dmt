@@ -39,7 +39,7 @@ def create_jwt(email: str, is_superuser: bool = False):
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.post("/signup")
+@router.post("/signup", status_code=201)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     is_auth = authenticate(form_data.username, form_data.password)
     if not is_auth:
