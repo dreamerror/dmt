@@ -1,8 +1,6 @@
-import bcrypt as bc
 import jwt
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import EmailStr
 
 from models.account import User
 import api.settings as settings
@@ -29,11 +27,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except jwt.PyJWTError:
         raise jwt.PyJWTError
     return payload
-
-
-@router.get("/{user_id}")
-async def get_user_by_id(user_id: int):
-    return User(email=EmailStr("example@example.com"), hashed_password="example_pass")
 
 
 @router.get("/me")

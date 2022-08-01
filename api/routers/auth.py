@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 import api.settings as settings
+from api.fake_db import users as USERS
 
 
 router = APIRouter(
@@ -19,10 +20,10 @@ def check_password(entered_password: str, right_password: str):
 
 
 def authenticate(email: str, password: str):
-    if email != "example@example.com":
-        return False
-    pwd = bc.hashpw(settings.TEST_PASSWORD.encode("utf-8"), bc.gensalt(12)).decode("utf-8")
-    return check_password(password, pwd)
+    for user in USERS:
+        if user["email"] == email:
+            return check_password(password, user["hashed_password"])
+    return False
 
 
 def create_jwt(email: str, is_superuser: bool = False):
@@ -30,11 +31,12 @@ def create_jwt(email: str, is_superuser: bool = False):
     payload["email"] = email
     payload["is_superuser"] = is_superuser
     payload["exp"] = datetime.now() + timedelta(minutes=int(settings.JWT_EXPIRE_MINUTES))
-    return jwt.encode(
+    token = jwt.encode(
         payload,
         settings.JWT_SECRET,
         settings.JWT_ALGORITHM
     )
+    return {"access_token": token, "token_type": "bearer"}
 
 
 @router.post("/signup")

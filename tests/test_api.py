@@ -3,7 +3,6 @@ from faker import Faker
 
 from ..api.api_main import app
 from ..api.access_keys import validate_key
-from ..api.routers.user import hash_password
 from ..models.account import User
 
 
