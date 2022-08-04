@@ -25,3 +25,19 @@ class DatabaseAlreadyExists(Exception):
 
     def __str__(self):
         return f"Database \"{self.name}\" already exists"
+
+
+class DatabaseDoesNotExist(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+    def __str__(self):
+        return f"Database\"{self.name}\" does not exist"
+
+
+class ConflictingDocument(Exception):
+    def __init__(self, uuid: str):
+        self.uuid = uuid
+
+    def __str__(self):
+        return f"Document with ID \"{self.uuid}\" already exists"
