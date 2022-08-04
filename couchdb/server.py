@@ -1,5 +1,6 @@
 import requests
 from typing import List
+from datetime import datetime, timedelta
 
 from database import Database
 from document import Document
@@ -30,6 +31,9 @@ class Couch:
         response = self.session.post(self._url + "_session", data=body)
         if response.status_code == 401:
             raise exc.AuthorizationFailed
+        for cookie in response.cookies:
+            if cookie.name == "AuthSession":
+                cookie.expires = datetime.timestamp(datetime.fromtimestamp(cookie.expires) + timedelta(days=180))
         return True
 
     def get_uuids(self, count: int = 10) -> List[str]:
