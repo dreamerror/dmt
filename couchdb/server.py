@@ -47,10 +47,18 @@ class Couch:
         return response.json()["uuids"]
 
     def get_db(self, database: Database):
-        response = self.session.get(self._url + database.name)
+        """
+        Get list of all documents in database
+        Authorization required
+        """
+        response = self.session.get(self._url + database.name + "/_all_docs")
         return response.json()
 
     def create_db(self, database: Database):
+        """
+        Create database in current node
+        Authorization required
+        """
         response = self.session.put(self._url + database.name)
         match response.status_code:
             case 400:
@@ -63,6 +71,10 @@ class Couch:
                 return True
 
     def delete_db(self, database: Database):
+        """
+        Delete existing database
+        Authorization required
+        """
         response = self.session.delete(self._url + database.name)
         match response.status_code:
             case 400:
@@ -75,9 +87,13 @@ class Couch:
                 return True
 
     def create_document(self, database: Database, document: Document):
+        """
+        Create document in existing database
+        Authorization required
+        """
         if "_id" not in document.data.keys():
             document.data["_id"] = self.get_uuids(1)[0]
-        response = self.session.post(self._url + database.name, data=document.data)
+        response = self.session.post(self._url + database.name, json=document.data)
         match response.status_code:
             case 400:
                 raise exc.InvalidName(database.name)
@@ -88,4 +104,4 @@ class Couch:
             case 409:
                 raise exc.ConflictingDocument(document.data["_id"])
             case _:
-                return True
+                return response.json()
