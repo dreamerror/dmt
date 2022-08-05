@@ -91,9 +91,9 @@ class Couch:
         Create document in existing database
         Authorization required
         """
-        if "_id" not in document.data.keys():
-            document.data["_id"] = self.get_uuids(1)[0]
-        response = self.session.post(self._url + database.name, json=document.data)
+        if "_id" not in document.keys():
+            document["_id"] = self.get_uuids(1)[0]
+        response = self.session.post(self._url + database.name, json=document)
         match response.status_code:
             case 400:
                 raise exc.InvalidName(database.name)
@@ -102,6 +102,6 @@ class Couch:
             case 404:
                 raise exc.DatabaseDoesNotExist(database.name)
             case 409:
-                raise exc.ConflictingDocument(document.data["_id"])
+                raise exc.ConflictingDocument(document["_id"])
             case _:
                 return response.json()
