@@ -2,8 +2,8 @@ import requests
 from typing import List
 from datetime import datetime, timedelta
 
-from database import Database
-from document import Document
+from couchdb.database import Database
+from couchdb.document import Document
 import couchdb.exceptions as exc
 
 
