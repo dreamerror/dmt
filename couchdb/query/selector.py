@@ -27,17 +27,25 @@ class SelectorElement:
 
 class Selector:
     def __init__(self):
-        self.expression = {"selector": dict()}
+        self.expr = dict()
         self.elements = list()
+        self.checked_elements = list()
 
     def add_elements(self, *args: SelectorElement):
         self.elements += args
 
-    def __repr__(self):
-        #  TODO: подумать, можно ли это ускорить, и нужно ли вообще
-        expr = dict()
+    @property
+    def expression(self):
+        #  TODO: подумать, можно ли это как-то ускорить и нужно ли вообще
         for elem in self.elements:
-            expr.update(elem.query)
-        self.expression["selector"] = expr
+            if elem not in self.checked_elements:
+                self.checked_elements.append(elem)
+                self.expr.update(elem.query)
+        return {"selector": self.expr}
+
+    def __repr__(self):
         return repr(self.expression)
+
+    def json(self):
+        return self.expression
 
