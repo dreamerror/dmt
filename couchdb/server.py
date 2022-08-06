@@ -51,7 +51,7 @@ class Couch:
         Get list of all documents in database
         Authorization required
         """
-        response = self.session.get(self._url + database.name + "/_all_docs")
+        response = self.session.post(self._url + database.name + "/_all_dbs")
         return response.json()
 
     def create_db(self, database: Database):
@@ -93,7 +93,7 @@ class Couch:
         """
         if "_id" not in document.keys():
             document["_id"] = self.get_uuids(1)[0]
-        response = self.session.post(self._url + database.name, json=document)
+        response = self.session.post(self._url + database.name, json=document.json)
         match response.status_code:
             case 400:
                 raise exc.InvalidName(database.name)

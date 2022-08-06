@@ -30,3 +30,8 @@ class Document:
     def __str__(self):
         attrs = ", ".join([f"{key}: {value}" for key, value in self.items()])
         return f"<{self.__class__.__name__}>: ({attrs})"
+
+    @property
+    def json(self):
+        #  TODO: написать кастомный JSON-сериалайзер
+        return self.__dict__
