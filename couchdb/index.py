@@ -4,7 +4,7 @@ from couchdb.query import Selector
 class Index:
     def __init__(self, name: str):
         self.name = name
-        self.index = {"name": name, "type": "json"}
+        self.index = {"name": name, "type": "json", "index": dict()}
         self.fields = set()
 
     def add_fields(self, *args: str):
@@ -15,6 +15,6 @@ class Index:
 
     @property
     def expression(self) -> dict:
-        self.index["fields"] = self.fields
+        self.index["index"]["fields"] = list(self.fields)
         return self.index
 
