@@ -67,8 +67,8 @@ class Couch:
                 raise exc.NotAuthorised
             case 412:
                 raise exc.DatabaseAlreadyExists(database.name)
-            case _:
-                return True
+        if database.docs:
+            self.bulk_insert(database, database.docs)
 
     def delete_db(self, database: Database):
         """
@@ -105,3 +105,12 @@ class Couch:
                 raise exc.ConflictingDocument(document["_id"])
             case _:
                 return response.json()
+
+    def bulk_insert(self, database: Database, docs: List[Document]):
+        req_body = {"docs": list((doc.json for doc in docs))}
+        response = self.session.post(self._url + database.name + "/_bulk_docs", json=req_body)
+        match response.status_code:
+            case 400:
+                raise exc.InvalidData(req_body)
+            case 404:
+                raise exc.DatabaseDoesNotExist(database.name)

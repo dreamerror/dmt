@@ -19,6 +19,14 @@ class InvalidName(Exception):
         return f"Name \"{self.name}\" is invalid. {self.__doc__}"
 
 
+class InvalidData(Exception):
+    def __init__(self, data: dict):
+        self.data = data
+
+    def __str__(self):
+        return f"\"{self.data}\" is invalid JSON Data"
+
+
 class DatabaseAlreadyExists(Exception):
     def __init__(self, name: str):
         self.name = name
