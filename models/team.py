@@ -1,9 +1,6 @@
-from datetime import datetime, timedelta
 from typing import List
 
 from pydantic import BaseModel, AnyUrl, Json
-
-from .tasks import Task
 
 
 class TeamMemberCharacteristics(BaseModel):
@@ -15,7 +12,6 @@ class TeamMember(BaseModel):
     name: str
     photo: AnyUrl | None = None
     characteristics: TeamMemberCharacteristics
-    task_on_work: Task | None = None
 
 
 class Team(BaseModel):
