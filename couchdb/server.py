@@ -8,13 +8,10 @@ import couchdb.exceptions as exc
 
 
 class Couch:
-    def __init__(self, db_url: str = "http://localhost:5984/"):
-        """
-        :param db_url: URL used for connection to CouchDB
-        """
-        self._url = db_url
-        if not db_url.endswith("/"):
-            self._url += "/"
+    def __init__(self, db_host: str = "localhost", db_port: str | int = 5984):
+        if not db_host.startswith("http"):
+            db_host = "http://" + db_host
+        self._url = f"{db_host}:{db_port}/"
         self.session = requests.Session()
 
     def authorize(self, username: str, password: str):
