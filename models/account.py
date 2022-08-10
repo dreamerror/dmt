@@ -18,6 +18,11 @@ class User(BaseModel):
     company: Company | None = None
 
 
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class DatabaseUser(BaseModel):
     username: str
     password: str
