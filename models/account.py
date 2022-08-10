@@ -17,3 +17,8 @@ class User(BaseModel):
     hashed_password: str
     company: Company | None = None
 
+
+class DatabaseUser(BaseModel):
+    username: str
+    password: str
+
