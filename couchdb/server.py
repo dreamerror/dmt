@@ -4,15 +4,18 @@ from datetime import datetime, timedelta
 
 from couchdb.database import Database
 from couchdb.document import Document
+from models import DatabaseUser
 import couchdb.exceptions as exc
 
 
 class Couch:
-    def __init__(self, db_host: str = "localhost", db_port: str | int = 5984):
+    def __init__(self, db_host: str = "localhost", db_port: str | int = 5984, user: DatabaseUser | None = None):
         if not db_host.startswith("http"):
             db_host = "http://" + db_host
         self._url = f"{db_host}:{db_port}/"
         self.session = requests.Session()
+        if not user is None:
+            self.authorize(user.username, user.password)
 
     def authorize(self, username: str, password: str):
         """
