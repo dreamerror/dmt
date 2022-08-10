@@ -1,12 +1,9 @@
-from datetime import datetime, timedelta
-
 import bcrypt as bc
-import jwt
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.security import OAuth2PasswordRequestForm
 
-import api.settings as settings
 from api.fake_db import users as USERS
+from api.jwt import create_jwt
 
 
 router = APIRouter(
@@ -24,19 +21,6 @@ def authenticate(email: str, password: str):
         if user["email"] == email:
             return check_password(password, user["hashed_password"])
     return False
-
-
-def create_jwt(email: str, is_superuser: bool = False):
-    payload = dict()
-    payload["email"] = email
-    payload["is_superuser"] = is_superuser
-    payload["exp"] = datetime.now() + timedelta(minutes=int(settings.JWT_EXPIRE_MINUTES))
-    token = jwt.encode(
-        payload,
-        settings.JWT_SECRET,
-        settings.JWT_ALGORITHM
-    )
-    return {"access_token": token, "token_type": "bearer"}
 
 
 @router.post("/signup", status_code=201)

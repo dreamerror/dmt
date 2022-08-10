@@ -2,8 +2,10 @@ import jwt
 import bcrypt as bc
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import RedirectResponse
 
 from api.db import server
+from api.jwt import create_jwt
 from couchdb import Database, Document
 from models.account import UserRegister
 import settings
@@ -47,5 +49,5 @@ async def get_me(token: str = Depends(oauth2_scheme)):
 async def create_user(user: UserRegister):
     server.get_or_create_db(users_db)
     hashed_password = bc.hashpw(user.password.encode("utf-8"), bc.gensalt(12)).decode("utf-8")
-    server.create_document(users_db, Document(email=user.email, hashed_pw=hashed_password))
-    return {"message": "success"}
+    server.create_document(users_db, Document(email=user.username, hashed_pw=hashed_password))
+    return create_jwt(user.username)

@@ -19,7 +19,7 @@ class User(BaseModel):
 
 
 class UserRegister(BaseModel):
-    email: EmailStr
+    username: EmailStr
     password: str
 
 
