@@ -126,7 +126,7 @@ class Couch:
             case 404:
                 raise exc.DatabaseDoesNotExist(database.name)
 
-    def find_docs(self, database: Database, selector: Selector):
+    async def find_docs(self, database: Database, selector: Selector):
         response = self.session.post(self._url + database.name + "/_find", json=selector.json())
         match response.status_code:
             case 400:

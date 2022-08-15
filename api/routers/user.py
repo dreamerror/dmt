@@ -54,7 +54,8 @@ async def create_user(user: UserRegister):
     email_selector == user.username
     selector = Selector()
     selector.add_elements(email_selector)
-    if len(server.find_docs(users_db, selector)) > 0:
+    data = await server.find_docs(users_db, selector)
+    if len(data) > 0:
         return {"error": "User with this email already exists"}
     server.create_document(users_db, Document(email=user.username, hashed_pw=hashed_password))
     return create_jwt(user.username)
