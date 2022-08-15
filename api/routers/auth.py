@@ -2,9 +2,13 @@ import bcrypt as bc
 from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.security import OAuth2PasswordRequestForm
 
-from api.fake_db import users as USERS
+from api.db import server
 from api.jwt import create_jwt
+from couchdb import Database
+from couchdb.query import SelectorElement, Selector
 
+
+users_db = Database("users_db")
 
 router = APIRouter(
     prefix="/auth",
@@ -17,9 +21,14 @@ def check_password(entered_password: str, right_password: str):
 
 
 def authenticate(email: str, password: str):
-    for user in USERS:
-        if user["email"] == email:
-            return check_password(password, user["hashed_password"])
+    server.get_or_create_db(Database("users_db"))
+    email_selector = SelectorElement("email")
+    email_selector == email
+    selector = Selector()
+    selector.add_elements(email_selector)
+    user = server.find_docs(users_db, selector)
+    if user:
+        return check_password(password, user[0]["hashed_pw"])
     return False
 
 
