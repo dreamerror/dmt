@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from couchdb.database import Database
 from couchdb.document import Document
+from couchdb.query import Selector
 from models import DatabaseUser
 import couchdb.exceptions as exc
 
@@ -14,7 +15,7 @@ class Couch:
             db_host = "http://" + db_host
         self._url = f"{db_host}:{db_port}/"
         self.session = requests.Session()
-        if not user is None:
+        if user is not None:
             self.authorize(user.username, user.password)
 
     def authorize(self, username: str, password: str):
@@ -124,3 +125,7 @@ class Couch:
                 raise exc.InvalidData(req_body)
             case 404:
                 raise exc.DatabaseDoesNotExist(database.name)
+
+    def find_docs(self, database: Database, selector: Selector):
+        response = self.session.post(self._url + database.name + "/_find", json=selector.json())
+        return response.json()["docs"]
