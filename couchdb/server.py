@@ -128,4 +128,13 @@ class Couch:
 
     def find_docs(self, database: Database, selector: Selector):
         response = self.session.post(self._url + database.name + "/_find", json=selector.json())
+        match response.status_code:
+            case 400:
+                pass  # невалидный реквест, нужно прописать эксепшн для этого
+            case 401:
+                raise exc.NotAuthorised
+            case 404:
+                raise exc.DatabaseDoesNotExist(database.name)
+            case 500:
+                pass  # ошибка при исполнении запроса, тоже нужен свой эксепшн
         return response.json()["docs"]
