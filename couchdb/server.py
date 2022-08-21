@@ -47,39 +47,37 @@ class Couch:
         response = self.session.get(uuids_url)
         return response.json()["uuids"]
 
-    def __get_db(self, database: Database):
+    def __get_db(self, database: str) -> Database:
         """
         return True if database exists
         Authorization required
         """
-        response = self.session.get(self._url + database.name)
+        response = self.session.get(self._url + database)
         match response.status_code:
             case 404:
-                raise exc.DatabaseDoesNotExist(database.name)
-            case _:
-                return True
+                raise exc.DatabaseDoesNotExist(database)
+        return Database(database, self.session, self._url)
 
-    def __create_db(self, database: Database):
+    def __create_db(self, database: str) -> Database:
         """
         Create database in current node
         Authorization required
         """
-        response = self.session.put(self._url + database.name)
+        response = self.session.put(self._url + database)
         match response.status_code:
             case 400:
-                raise exc.InvalidName(database.name)
+                raise exc.InvalidName(database)
             case 401:
                 raise exc.NotAuthorised
             case 412:
-                raise exc.DatabaseAlreadyExists(database.name)
-        if database.docs:
-            self.bulk_insert(database, database.docs)
+                raise exc.DatabaseAlreadyExists(database)
+        return Database(database, self.session, self._url)
 
-    def get_or_create_db(self, database: Database):
+    def get_or_create_db(self, database: str) -> Database:
         try:
-            self.__get_db(database)
+            return self.__get_db(database)
         except exc.DatabaseDoesNotExist:
-            self.__create_db(database)
+            return self.__create_db(database)
 
     def delete_db(self, database: Database):
         """
