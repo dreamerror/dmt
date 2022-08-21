@@ -16,8 +16,6 @@ router = APIRouter(
     tags=["user"]
 )
 
-users_db = Database("users_db")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/signup")
 
 
@@ -48,13 +46,13 @@ async def get_me(token: str = Depends(oauth2_scheme)):
 
 @router.post("/register", status_code=201)
 async def create_user(user: UserRegister):
-    server.get_or_create_db(users_db)
+    users_db = server.get_or_create_db("users_db")
     hashed_password = bc.hashpw(user.password.encode("utf-8"), bc.gensalt(12)).decode("utf-8")
     email_selector = SelectorElement("email")
     email_selector == user.username
     selector = Selector()
     selector.add_elements(email_selector)
-    data = await server.find_docs(users_db, selector)
+    data = await users_db.find_docs(selector)
     if len(data) > 0:
         return {"error": "User with this email already exists"}
     server.create_document(users_db, Document(email=user.username, hashed_pw=hashed_password))

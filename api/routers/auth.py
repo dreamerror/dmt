@@ -8,8 +8,6 @@ from couchdb import Database
 from couchdb.query import SelectorElement, Selector
 
 
-users_db = Database("users_db")
-
 router = APIRouter(
     prefix="/auth",
     tags=["auth"]
@@ -21,12 +19,12 @@ def check_password(entered_password: str, right_password: str):
 
 
 async def authenticate(email: str, password: str):
-    server.get_or_create_db(Database("users_db"))
+    users_db = server.get_or_create_db("users_db")
     email_selector = SelectorElement("email")
     email_selector == email
     selector = Selector()
     selector.add_elements(email_selector)
-    user = await server.find_docs(users_db, selector)
+    user = await users_db.find_docs(selector)
     if user:
         return check_password(password, user[0]["hashed_pw"])
     return False
