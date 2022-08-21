@@ -37,16 +37,6 @@ class Couch:
                 cookie.expires = datetime.timestamp(datetime.fromtimestamp(cookie.expires) + timedelta(days=180))
         return True
 
-    def get_uuids(self, count: int = 10) -> List[str]:
-        """
-        Generate list of uuids that may be used as documents' _id fields
-        :param count: Count of uuids that should be returned
-        :return: List of uuids
-        """
-        uuids_url = self._url + f"_uuids?{count=}"
-        response = self.session.get(uuids_url)
-        return response.json()["uuids"]
-
     def __get_db(self, database: str) -> Database:
         """
         return True if database exists
@@ -78,61 +68,3 @@ class Couch:
             return self.__get_db(database)
         except exc.DatabaseDoesNotExist:
             return self.__create_db(database)
-
-    def delete_db(self, database: Database):
-        """
-        Delete existing database
-        Authorization required
-        """
-        response = self.session.delete(self._url + database.name)
-        match response.status_code:
-            case 400:
-                raise exc.InvalidName(database.name)
-            case 401:
-                raise exc.NotAuthorised
-            case 404:
-                raise exc.DatabaseDoesNotExist(database.name)
-            case _:
-                return True
-
-    def create_document(self, database: Database, document: Document):
-        """
-        Create document in existing database
-        Authorization required
-        """
-        if "_id" not in document.keys():
-            document["_id"] = self.get_uuids(1)[0]
-        response = self.session.post(self._url + database.name, json=document.json)
-        match response.status_code:
-            case 400:
-                raise exc.InvalidName(database.name)
-            case 401:
-                raise exc.NotAuthorised
-            case 404:
-                raise exc.DatabaseDoesNotExist(database.name)
-            case 409:
-                raise exc.ConflictingDocument(document["_id"])
-            case _:
-                return response.json()
-
-    def bulk_insert(self, database: Database, docs: List[Document]):
-        req_body = {"docs": list((doc.json for doc in docs))}
-        response = self.session.post(self._url + database.name + "/_bulk_docs", json=req_body)
-        match response.status_code:
-            case 400:
-                raise exc.InvalidData(req_body)
-            case 404:
-                raise exc.DatabaseDoesNotExist(database.name)
-
-    async def find_docs(self, database: Database, selector: Selector):
-        response = self.session.post(self._url + database.name + "/_find", json=selector.json())
-        match response.status_code:
-            case 400:
-                pass  # невалидный реквест, нужно прописать эксепшн для этого
-            case 401:
-                raise exc.NotAuthorised
-            case 404:
-                raise exc.DatabaseDoesNotExist(database.name)
-            case 500:
-                pass  # ошибка при исполнении запроса, тоже нужен свой эксепшн
-        return response.json()["docs"]
