@@ -7,9 +7,6 @@ from couchdb.query import Selector
 import couchdb.exceptions as exc
 
 
-print(Document)
-
-
 class Database:
     def __init__(self, name: str, session: Session, url: str):
         self.name = name
@@ -29,15 +26,15 @@ class Database:
         for doc in resp:
             yield Document(**doc)
 
-    def _get_doc_by_id(self, doc_id):
+    def _get_doc_by_id(self, doc_id: str | int):
         response = self._session.get(self.url + f"{self.name}/{doc_id}")
         match response.status_code:
             case 400:
-                pass
+                raise exc.UnknownError
             case 404:
-                pass
+                raise exc.DocumentDoesNotExist(doc_id)
             case 401:
-                pass
+                raise exc.NotAuthorised
             case 200:
                 return Document(**response.json())
 
