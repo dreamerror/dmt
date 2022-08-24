@@ -17,3 +17,13 @@ class User(BaseModel):
     hashed_password: str
     company: Company | None = None
 
+
+class UserRegister(BaseModel):
+    username: EmailStr
+    password: str
+
+
+class DatabaseUser(BaseModel):
+    username: str
+    password: str
+
