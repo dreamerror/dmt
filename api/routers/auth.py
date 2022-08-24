@@ -1,12 +1,11 @@
-from datetime import datetime, timedelta
-
 import bcrypt as bc
-import jwt
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.security import OAuth2PasswordRequestForm
 
-import api.settings as settings
-from api.fake_db import users as USERS
+from api.db import server
+from api.jwt import create_jwt
+from couchdb import Database
+from couchdb.query import SelectorElement, Selector
 
 
 router = APIRouter(
@@ -19,29 +18,21 @@ def check_password(entered_password: str, right_password: str):
     return bc.checkpw(entered_password.encode("utf-8"), right_password.encode("utf-8"))
 
 
-def authenticate(email: str, password: str):
-    for user in USERS:
-        if user["email"] == email:
-            return check_password(password, user["hashed_password"])
+async def authenticate(email: str, password: str):
+    users_db = server.get_or_create_db("users_db")
+    email_selector = SelectorElement("email")
+    email_selector == email
+    selector = Selector()
+    selector.add_elements(email_selector)
+    user = await users_db.find_docs(selector)
+    if user:
+        return check_password(password, user[0]["hashed_pw"])
     return False
-
-
-def create_jwt(email: str, is_superuser: bool = False):
-    payload = dict()
-    payload["email"] = email
-    payload["is_superuser"] = is_superuser
-    payload["exp"] = datetime.now() + timedelta(minutes=int(settings.JWT_EXPIRE_MINUTES))
-    token = jwt.encode(
-        payload,
-        settings.JWT_SECRET,
-        settings.JWT_ALGORITHM
-    )
-    return {"access_token": token, "token_type": "bearer"}
 
 
 @router.post("/signup", status_code=201)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    is_auth = authenticate(form_data.username, form_data.password)
+    is_auth = await authenticate(form_data.username, form_data.password)
     if not is_auth:
         raise HTTPException(
             status_code=400,

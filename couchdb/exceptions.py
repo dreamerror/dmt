@@ -43,9 +43,21 @@ class DatabaseDoesNotExist(Exception):
         return f"Database\"{self.name}\" does not exist"
 
 
+class DocumentDoesNotExist(Exception):
+    def __init__(self, doc_id: str | int):
+        self.doc_id = doc_id
+
+    def __str__(self):
+        return f"Document with id<{self.doc_id}> does not exist"
+
+
 class ConflictingDocument(Exception):
     def __init__(self, uuid: str):
         self.uuid = uuid
 
     def __str__(self):
         return f"Document with ID \"{self.uuid}\" already exists"
+
+
+class UnknownError(Exception):
+    pass
