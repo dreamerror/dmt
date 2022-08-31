@@ -1,6 +1,6 @@
 import jwt
 import bcrypt as bc
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Form
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import RedirectResponse
 
@@ -45,15 +45,15 @@ async def get_me(token: str = Depends(oauth2_scheme)):
 
 
 @router.post("/register", status_code=201)
-async def create_user(user: UserRegister):
+async def create_user(username: str = Form(), password: str = Form()):
     users_db = server.get_or_create_db("users_db")
-    hashed_password = bc.hashpw(user.password.encode("utf-8"), bc.gensalt(12)).decode("utf-8")
+    hashed_password = bc.hashpw(password.encode("utf-8"), bc.gensalt(12)).decode("utf-8")
     email_selector = SelectorElement("email")
-    email_selector == user.username
+    email_selector == username
     selector = Selector()
     selector.add_elements(email_selector)
     data = await users_db.find_docs(selector)
     if len(data) > 0:
         return {"error": "User with this email already exists"}
-    server.create_document(users_db, Document(email=user.username, hashed_pw=hashed_password))
-    return create_jwt(user.username)
+    users_db.create_document(Document(email=username, hashed_pw=hashed_password))
+    return RedirectResponse("/auth/signup")
