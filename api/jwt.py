@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 import settings
 
 
-def create_jwt(email: str, is_superuser: bool = False):
+def create_jwt(email: str, is_admin: bool = False, is_superuser: bool = False):
     payload = dict()
     payload["email"] = email
+    payload["is_admin"] = is_admin
     payload["is_superuser"] = is_superuser
     payload["exp"] = datetime.now() + timedelta(minutes=int(settings.JWT_EXPIRE_MINUTES))
     token = jwt.encode(

@@ -16,6 +16,8 @@ class User(BaseModel):
     card: PaymentCardNumber | None = None
     hashed_password: str
     company: Company | None = None
+    is_admin: bool = False
+    is_superuser: bool = False
 
 
 class UserRegister(BaseModel):
