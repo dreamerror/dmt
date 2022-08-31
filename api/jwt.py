@@ -1,7 +1,13 @@
 import jwt
 from datetime import datetime, timedelta
 
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+
 import settings
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/signup")
 
 
 def create_jwt(email: str, is_admin: bool = False, is_superuser: bool = False):
@@ -16,3 +22,19 @@ def create_jwt(email: str, is_admin: bool = False, is_superuser: bool = False):
         settings.JWT_ALGORITHM
     )
     return {"access_token": token, "token_type": "bearer"}
+
+
+def decode_jwt(token: str):
+    return jwt.decode(
+        token,
+        settings.JWT_SECRET,
+        algorithms=[settings.JWT_ALGORITHM]
+    )
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = decode_jwt(token)
+    except jwt.PyJWTError:
+        raise jwt.PyJWTError
+    return payload
