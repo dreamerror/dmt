@@ -1,7 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 import settings
@@ -32,9 +32,20 @@ def decode_jwt(token: str):
     )
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str):
     try:
         payload = decode_jwt(token)
     except jwt.PyJWTError:
         raise jwt.PyJWTError
     return payload
+
+
+async def user_has_permission(token: str, permission: str):
+    try:
+        payload = decode_jwt(token)
+        if not payload[f"is_{permission}"]:
+            return False
+        else:
+            return True
+    except jwt.PyJWTError:
+        raise jwt.PyJWTError
